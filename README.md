@@ -1,5 +1,7 @@
 # Voice-dataset-tool
 Keeping voice by LINE chatbot
+index.js และ package.json เมื่อทำการติดตั้ง firebase CLI ไฟล์จะอยู่ในโฟลเดอร์ที่เราสร้างเพื่อใช้ในการสร้างฟังชั่น
+
 อธิบายขั้นตอนแต่ละวิธี
 
 1. สร้าง Provider และ Channel
