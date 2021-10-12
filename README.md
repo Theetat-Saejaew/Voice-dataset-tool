@@ -3,10 +3,10 @@ admin.initializeApp();
 const functions = require("firebase-functions");
 const axios = require("axios");
 
-// สำหรับสร้าง public url ใน Cloud Storage
+
 const UUID = require('uuid-v4');
 
-// สำหรับจัดการไฟล์
+
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
