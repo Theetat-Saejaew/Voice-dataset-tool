@@ -1,0 +1,9 @@
+{
+    "lineMessageingApi": "https://api.line.me/v2/bot/message",
+    "lineHeaders": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer Mxdf0uFVUrAbV9zvpaGaZxic2wGs8iXGeBC69PHWzuf+aBiE+nKwPelbibybVmUn82s1yTWmZlz0wvt7wi05vxhVKpWC0LQmb7WxJAK57dGRjxkN4OGfDn9bqIdj6WLNNZQMFQqF0UQKrBEnrRypiQdB04t89/1O/w1cDnyilFU="
+    },
+    "databaseURL": "https://test-chatbot-2a580.firebase.com",
+    "notifyToken": ""
+}
