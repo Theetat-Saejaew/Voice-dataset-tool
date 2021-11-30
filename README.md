@@ -157,7 +157,8 @@ const LINE_HEADER = {
 ```
 > Important: ให้เอา Channel Access Token ที่ได้จากขั้นตอนที่ 2(สร้าง Provider และ Channel) ไปแทนที่ xxxxx
 
-2. ถัดไปให้สร้างฟังก์ชันชื่อ LineWebhook ในไฟล์ index.js โดยภายในฟังก์ชันให้เขียนเงื่อนไขเพื่อรับ Webhook event จาก LINE ซึ่งเราจะสนใจเฉพาะกรณีที่ผู้ใช้อัพโหลด audio เข้ามา
+2. ถัดไปให้สร้างฟังก์ชันชื่อ LineWebhook ในไฟล์ index.js โดยภายในฟังก์ชันให้เขียนเงื่อนไขเพื่อรับ Webhook event จาก LINE ซึ่งเราจะสนใจเฉพาะกรณีที่ผู้ใช้อัพโหลด audio เข้ามาและ Token ของ Line Notify เท่านั้น
+  และเมื่อบันทึก Token จาก Line Notify แล้วจะทำการเซ็ตค่าเริ่มต้นให้ผู้ใช้
 ```
 exports.LineWebhook = functions.https.onRequest(async (req, res) => { 
   const FieldValue = admin.firestore.FieldValue;
@@ -226,7 +227,7 @@ exports.LineWebhook = functions.https.onRequest(async (req, res) => {
      return res.end(); 
 });
 ```
-3. ที่บรรทัดสุดท้ายของไฟล์ index.js ให้เพิ่มฟังก์ชัน reply() เพื่อส่ง URL ที่ได้จากการอัพโหลดกลับไปยังห้องแชท และ ฟังก์ชั่นสำหรับ Line Notify
+3. ที่บรรทัดสุดท้ายของไฟล์ index.js ให้เพิ่มฟังก์ชัน reply() เพื่อส่ง URL ที่ได้จากการอัพโหลดกลับไปยังห้องแชท และ ฟังก์ชั่นสำหรับ Line Notify ที่ใช้ในการส่ง script ให้ผู้ใช้
 ```
 const reply = async(replyToken, payload) => {
    axios({
@@ -310,7 +311,7 @@ return `${prefix}/${encodeURIComponent(file[0].name)}?${suffix}`
 โดยเราจะให้ส่ง script ให้ผู้ทดลองทุก 3 ชั่วโมง โดยใน 1 วันจะส่งทั้งหมด 3 ครั้ง เมื่อส่งแล้วจะมีการตรวจทุก 19 นาทีว่าทำการส่งแล้วหรือยัง ถ้าไม่ได้ทำการส่งจะมี Line Notify แจ้งเตือนผู้ใช้
 ว่ายังไม่ได้ทำการส่งและมี ResetDay ResetNight เอาไว้ทำการรีเซ็ตข้อมูลประจำวันและนำไปบันทึกที่ report บน Firestore (ช่วงเวลาสามารถปรับเปลี่ยนได้ตามต้องการ)
 
-ฟังก์ชันสำหรับพี่ยามกะกลางคืน
+ฟังก์ชันสำหรับผู้ใช้งาน(พี่ยามกะกลางคืน)
 ```
 exports.ResetNight = functions.pubsub.schedule("0 19 * * mon-sat").timeZone("Asia/Bangkok").onRun(async context => {
   const statusRef = admin.firestore().collection('Status');
@@ -328,7 +329,7 @@ exports.ResetNight = functions.pubsub.schedule("0 19 * * mon-sat").timeZone("Asi
     })
 });
 ```
-ฟังก์ชันสำหรับพี่ยามกะกลางวัน และ ทำการบันทึกข้อมูลทั้งหมดลง Firestore และทำการรีเซ็ตข้อมูล
+ฟังก์ชันสำหรับผู้ใช้งาน(พี่ยามกะกลางวัน) และ ทำการบันทึกข้อมูลทั้งหมดลง Firestore และทำการรีเซ็ตข้อมูล
 ```
 exports.ResetDay = functions.pubsub.schedule("0 7 * * mon-sat").timeZone("Asia/Bangkok").onRun(async context => {
   const days = (await admin.firestore().collection('Script').doc('countDays').get()).data().numberDay;
@@ -380,7 +381,7 @@ exports.ResetDay = functions.pubsub.schedule("0 7 * * mon-sat").timeZone("Asia/B
     })
 });
 ```
-ฟังก์ชั่นสำหรับการส่ง script ให้พี่ยามได้ทำการส่งไฟล์เสียง
+ฟังก์ชั่นสำหรับการส่ง script ให้ผู้ใช้งาน
 ```
 exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok").onRun(async context => {
   let randomNumber = Math.floor(Math.random() * 70);
@@ -415,7 +416,7 @@ exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok
         });
 });
 ```
-ฟังก์ชั่นสำหรับตรวจสอบว่าได้ทำการส่งข้อความแล้วหรือยัง
+ฟังก์ชั่นสำหรับตรวจสอบว่าได้ทำการส่งข้อความแล้วหรือยัง ถ้าไม่ได้ส่งจะทำการแจ้งเตือน
 ```
 exports.checkReply = functions.pubsub.schedule("*/19 * * * *").timeZone("Asia/Bangkok").onRun(async context => {
   const statusRef = admin.firestore().collection('TEST');
@@ -436,7 +437,8 @@ exports.checkReply = functions.pubsub.schedule("*/19 * * * *").timeZone("Asia/Ba
 ```
 firebase deploy --only functions
 ```
-2. หาก deploy สำเร็จ เราจะเห็นฟังก์ชันของเราแสดงอยู่ที่เมนู Functions ใน Firebase console โดยในหน้านี้จะมี Webhook URL ปรากฎอยู่ที่ column ชื่อ Trigger
+2. หาก deploy สำเร็จ เราจะเห็นฟังก์ชันของเราแสดงอยู่ที่เมนู Functions ใน Firebase console โดยในหน้านี้จะมี Webhook URL และ Cron Job ปรากฎอยู่ที่ column 
+![This is an image](https://firebasestorage.googleapis.com/v0/b/test-chatbot-2a580.appspot.com/o/photo%2FUntitled3.jpg?alt=media&token=132c66f0-721d-4246-ad6e-d09b7e33731e)
 
 ## เชื่อมต่อ Webhook URL เข้ากับ Messaging API Channel
 1. คัดลอก Webhook URL แล้วไปอัพเดทใน Messaging API Channel ที่สร้างไว้ในขั้นตอนที่ 2(สร้าง Provider และ Channel) พร้อมเปิด toggle ที่ชื่อ Use webhook
