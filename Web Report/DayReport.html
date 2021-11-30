@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายงานสรุปทั้งหมด</title>
+    <link rel="stylesheet" href="style1.css">
+    <script type="module" src="/page2.js"></script>
+</head>
+<body>
+    <header>
+        <span>ตารางการเข้าเช็คอินของผู้ใช้</span>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/page2.html">Day Reporting</a></li>
+        </ul>
+    </header>
+
+    <form id="addDay" class="addDay">
+        <div>
+          <input id="example" type="text" placeholder="ใส่วันเช่น day1, day2" name="text">
+          <input type="submit" class="" value="Send">
+        </div>
+      
+    </form>
+
+
+    <h2 align="center">Day Reporting</h2>
+        <table class="styled-table" id="tbresult">
+            <thead>
+                <tr>
+                    <th>ชื่อ-นามสกุล</th>
+                    <th>วัน - เวลาเช็คอินครั้งที่ 1</th>
+                    <th>วัน - เวลาเช็คอินครั้งที่ 2</th>
+                    <th>วัน - เวลาเช็คอินครั้งที่ 3</th>
+                    <th>เสียงที่1</th>
+                    <th>เสียงที่2</th>
+                    <th>เสียงที่3</th>
+                </tr>
+            </thead>
+        </table>    
+</body>
+</html>

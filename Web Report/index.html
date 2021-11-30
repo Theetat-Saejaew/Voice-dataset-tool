@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="/style1.css">
+    <title>Report</title>
+    <script type="module" src="/index.js"></script>
+</head>
+<body>
+    <header>
+        <span>ตารางการเข้าเช็คอินของผู้ใช้</span>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/page2.html">Day Reporting</a></li>
+           
+            <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">เพิ่มชื่อ-สกุล</button>
+        </ul>
+    </header>
+
+    <div id="id01" class="modal">
+        <form class="modal-content animate" id="addForm" method="post">
+          
+          <div class="imgcontainer">
+            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+            <img src="picture.png" alt="Avatar" class="avatar">
+          </div>
+      
+          <div class="container">
+            <label for="uname"><b>Username</b></label>
+            <input type="text" placeholder="Enter Username" name="uname" required>
+      
+            <label for="psw"><b>UserId</b></label>
+            <input type="text" placeholder="Enter UserId" name="psw" required>
+            
+            <label for="Group"><b>Group</b></label>
+            <p>
+              <select name="shift" id="shift">
+                <option value="Day">Day</option>
+                <option value="Night">Night</option>
+              </select>
+            </p>
+            <p><button type="submit" class="addbtn" onclick="document.getElementById('id01').style.display='none'">Submit</button></p>
+            
+        </div> 
+
+      <div class="container" style="background-color:#f1f1f1">
+        <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  
+  <h2  align="center">Group-Day</h2>
+  <table class="styled-table" id="tbresult">
+        <thead>
+            <tr>
+                <th>ชื่อ-นามสกุล</th>
+                <th>UserId</th>
+                <th>วัน-เวลาครั้งที่ 1</th>
+                <th>วัน-เวลาครั้งที่ 2</th>
+                <th>วัน-เวลาครั้งที่ 3</th>
+                <th>เสียงที่1</th>
+                <th>เสียงที่2</th>
+                <th>เสียงที่3</th>
+            </tr>
+        </thead>
+    </table>
+  <p>
+    <h2 align="center">Group-Night</h2>
+            <table class="styled-table" id="tbresult2">
+                <thead>
+                    <tr>
+                        <th>ชื่อ-นามสกุล</th>
+                    <th>UserId</th>
+                    <th >วัน-เวลาครั้งที่ 1</th>
+                    <th >วัน-เวลาครั้งที่ 2</th>
+                    <th >วัน-เวลาครั้งที่ 3</th>
+                    <th>เสียงที่1-ตรวจสอบ</th>
+                    <th>เสียงที่2-ตรวจสอบ</th>
+                    <th>เสียงที่3-ตรวจสอบ</th>
+                    </tr>
+                </thead>
+            </table>
+  </p>
+
+</body>
+</html>
