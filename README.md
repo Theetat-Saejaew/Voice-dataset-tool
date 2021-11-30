@@ -442,7 +442,7 @@ firebase deploy --only functions
 
 ## เชื่อมต่อ Webhook URL เข้ากับ Messaging API Channel
 1. คัดลอก Webhook URL แล้วไปอัพเดทใน Messaging API Channel ที่สร้างไว้ในขั้นตอนที่ 2(สร้าง Provider และ Channel) พร้อมเปิด toggle ที่ชื่อ Use webhook
-![This is an image](https://firebasestorage.googleapis.com/v0/b/test-chatbot-2a580.appspot.com/o/photo%2Fbcf39c14e6f2e4fd.png?alt=media&token=7838432d-4d87-4430-9065-f78d76933b10)
+![This is an image](https://firebasestorage.googleapis.com/v0/b/test-chatbot-2a580.appspot.com/o/photo%2FUntitled4.jpg?alt=media&token=a9133491-a4d6-4aa0-96d0-b972983619bc)
 
 
 
