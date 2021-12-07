@@ -80,7 +80,7 @@ exports.ResetDay = functions.pubsub.schedule("0 7 * * mon-sat").timeZone("Asia/B
   })
   
   
-  const statusRef = admin.firestore().collection('TEST');
+  const statusRef = admin.firestore().collection('Status');
   const snapshot =  await statusRef.where('conditions', '==', true).where('shift', '==', 'Day').get();
   
     snapshot.forEach(async(doc)=>{
@@ -112,7 +112,7 @@ exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok
   let randomNumber = Math.floor(Math.random() * 70);
   let defultScript = (await admin.firestore().collection('Script').doc(`script${randomNumber}`).get()).data().messagetext;
   const FieldValue = admin.firestore.FieldValue;
-  const statusRef = admin.firestore().collection('TEST');
+  const statusRef = admin.firestore().collection('Status');
   const snapshot =  await statusRef.where('status', '==', "Action").where('Today_check_in', '==', 'noSuccess').get();
   
   const beginSanpshot = await statusRef.where('status', '==', "noAction").where('timesScript', '==', 0).get();
@@ -123,7 +123,7 @@ exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok
 
           lineNotify(userIdToken, previousText);
 
-          await admin.firestore().collection('TEST').doc(doc.id).update({
+          await admin.firestore().collection('Status').doc(doc.id).update({
             status: 'noAction',
             timesScript: admin.firestore.FieldValue.increment(1)
             
@@ -133,7 +133,7 @@ exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok
       beginSanpshot.forEach(async(doc) => {
           let userIdToken = doc.data().TokenId;
           lineNotify(userIdToken, defultScript);
-          await admin.firestore().collection('TEST').doc(doc.id).update({
+          await admin.firestore().collection('Status').doc(doc.id).update({
             timesScript: admin.firestore.FieldValue.increment(1),
             prepareText: defultScript
 
@@ -143,7 +143,7 @@ exports.Notify = functions.pubsub.schedule("0 */3 * * *").timeZone("Asia/Bangkok
 
 //Cron Job สำหรับการ trigger เรียกใช้เพื่อตรวจสอบการส่ง audio ของผู้ใช้
 exports.checkReply = functions.pubsub.schedule("*/19 * * * *").timeZone("Asia/Bangkok").onRun(async context => {
-  const statusRef = admin.firestore().collection('TEST');
+  const statusRef = admin.firestore().collection('Status');
   const snapshot =  await statusRef.where('status', '==', "noAction").get(); 
   
     snapshot.forEach(async(doc) => {
@@ -165,7 +165,7 @@ exports.LineWebhook = functions.https.onRequest(async (req, res) => {
       //เรียกฟังก์ชันเมื่อเข้ามาในรูปแบบข้อความและเข้าเงื่อนไข ทำการบันทึกตัว Token ของผู้ใช้ลงบน Firebase Firestore
       if (event.type === 'message' && event.message.type === 'text' && event.message.text.length === 43 ) { 
         let inputText = event.message.text;
-        await admin.firestore().collection('TEST').doc(sourceuserId).set({
+        await admin.firestore().collection('Status').doc(sourceuserId).set({
           prepareText: "",
           userId: `${event.source.userId}`,
           check_in: 0,
@@ -184,16 +184,16 @@ exports.LineWebhook = functions.https.onRequest(async (req, res) => {
       //เรียกฟังก์ชันเมื่อเข้ามาในรูปแบบเสียง ทำการ dowload ไปบันทึกไฟล์เสียงลง Cloud Storage และบันทึก รายละเอียดอื่นๆลงใน Firebase Firestore
       else if (event.type === 'message' && event.message.type === 'audio'){
 
-            let nowStatus =  (await admin.firestore().collection('TEST').doc(sourceuserId).get()).data().status;
-            let userIdToken = (await admin.firestore().collection('TEST').doc(sourceuserId).get()).data().TokenId;
+            let nowStatus =  (await admin.firestore().collection('Status').doc(sourceuserId).get()).data().status;
+            let userIdToken = (await admin.firestore().collection('Status').doc(sourceuserId).get()).data().TokenId;
             
             if(nowStatus === "noAction"){
-              let previousText =  (await admin.firestore().collection('TEST').doc(sourceuserId).get()).data().prepareText
+              let previousText =  (await admin.firestore().collection('Status').doc(sourceuserId).get()).data().prepareText
               
               const urls = await upload(event, previousText);
               await reply(event.replyToken, { type: "text", text: 'บันทึกการเช็คอินของคุณเรียบร้อยแล้ว'});
               
-              await admin.firestore().collection('TEST').doc(sourceuserId).update({
+              await admin.firestore().collection('Status').doc(sourceuserId).update({
                 url: admin.firestore.FieldValue.arrayUnion(urls),
                 script: admin.firestore.FieldValue.arrayUnion(previousText)
               });
@@ -201,17 +201,17 @@ exports.LineWebhook = functions.https.onRequest(async (req, res) => {
               let randomNumber = Math.floor(Math.random() * 70);
               let msg = (await admin.firestore().collection('Script').doc(`script${randomNumber}`).get()).data().messagetext;
             
-              await admin.firestore().collection('TEST').doc(sourceuserId).update({
+              await admin.firestore().collection('Status').doc(sourceuserId).update({
                   prepareText: msg,
                   check_in: admin.firestore.FieldValue.increment(1),
                   status: "Action",
                   timestamp: admin.firestore.FieldValue.arrayUnion(event.timestamp)
               });   
 
-              let count =  (await admin.firestore().collection('TEST').doc(sourceuserId).get()).data().check_in;
+              let count =  (await admin.firestore().collection('Status').doc(sourceuserId).get()).data().check_in;
               if(count === 3){ 
                 lineNotify(userIdToken,"วันนี้คุณได้ทำการเช็คอินครบเรียบร้อยแล้ว");
-                await admin.firestore().collection('TEST').doc(sourceuserId).update({
+                await admin.firestore().collection('Status').doc(sourceuserId).update({
                   Today_check_in: 'Success'
                 })
               }
